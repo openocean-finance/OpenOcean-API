@@ -1,0 +1,110 @@
+{
+	"Mainnet": [{
+			"symbol": "AAVE",
+			"decimal": 8,
+			"address": "0xaD1d5344AaDE45F43E596773Bcc4c423EAbdD034"
+		},
+		{
+			"symbol": "AUD",
+			"decimal": 8,
+			"address": "0x9854e9a850e7C354c1de177eA953a6b1fba8Fc22"
+		},
+		{
+			"symbol": "BTC",
+			"decimal": 8,
+			"address": "0x6ce185860a4963106506C203335A2910413708e9"
+		},
+		{
+			"symbol": "CNY",
+			"decimal": 8,
+			"address": "0xcC3370Bde6AFE51e1205a5038947b9836371eCCb"
+		},
+		{
+			"symbol": "DAI",
+			"decimal": 8,
+			"address": "0xc5C8E77B397E531B8EC06BFb0048328B30E9eCfB"
+		},
+		{
+			"symbol": "ETH",
+			"decimal": 8,
+			"address": "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"
+		},
+		{
+			"symbol": "EUR",
+			"decimal": 8,
+			"address": "0xA14d53bC1F1c0F31B4aA3BD109344E5009051a84"
+		},
+		{
+			"symbol": "KRW",
+			"decimal": 8,
+			"address": "0x85bb02E0Ae286600d1c68Bb6Ce22Cc998d411916"
+		},
+		{
+			"symbol": "LINK",
+			"decimal": 8,
+			"address": "0x86E53CF1B870786351Da77A57575e79CB55812CB"
+		},
+		{
+			"symbol": "PHP",
+			"decimal": 8,
+			"address": "0xfF82AAF635645fD0bcc7b619C3F28004cDb58574"
+		},
+		{
+			"symbol": "SUSHI",
+			"decimal": 8,
+			"address": "0xb2A8BA74cbca38508BA1632761b56C897060147C"
+		},
+		{
+			"symbol": "UNI",
+			"decimal": 8,
+			"address": "0x9C917083fDb403ab5ADbEC26Ee294f6EcAda2720"
+		},
+		{
+			"symbol": "USDC",
+			"decimal": 8,
+			"address": "0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3"
+		},
+		{
+			"symbol": "USDT",
+			"decimal": 8,
+			"address": "0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7"
+		},
+		{
+			"symbol": "YFI",
+			"decimal": 8,
+			"address": "0x745Ab5b69E01E2BE1104Ca84937Bb71f96f5fB21"
+		}
+	],
+    "Rinkeby": [
+		{
+			"symbol": "BTC",
+			"decimal": 8,
+			"address": "0x0c9973e7a27d00e656B9f153348dA46CaD70d03d"
+		},
+		{
+			"symbol": "DAI",
+			"decimal": 8,
+			"address": "0xcAE7d280828cf4a0869b26341155E4E9b864C7b2"
+		},
+		{
+			"symbol": "ETH",
+			"decimal": 8,
+			"address": "0x5f0423B1a6935dc5596e7A24d98532b67A0AeFd8"
+		},
+		{
+			"symbol": "LINK",
+			"decimal": 8,
+			"address": "0x52C9Eb2Cc68555357221CAe1e5f2dD956bC194E5"
+		},
+		{
+			"symbol": "USDC",
+			"decimal": 8,
+			"address": "0xe020609A0C31f4F96dCBB8DF9882218952dD95c4"
+		},
+		{
+			"symbol": "USDT",
+			"decimal": 8,
+			"address": "0xb1Ac85E779d05C2901812d812210F6dE144b2df0"
+		}
+	]
+}

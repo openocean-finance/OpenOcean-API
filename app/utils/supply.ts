@@ -15,11 +15,10 @@ export const getPriceByAddress = async (platform: string, contract_addresses: st
         vs_currencies: 'usd',
       },
     });
-    console.log('getTokenPrice data:', data);
-    return data;
+    return [ null, data ];
   } catch (error) {
-    console.log('getTokenPrice error', error);
-    return {};
+    console.log('getPriceByAddress error', error);
+    return [ error ];
   }
 };
 
@@ -37,9 +36,9 @@ export const getPriceByIds = async (ids: string): Promise<any> => {
       },
     });
     console.log('getPriceByIds data:', data);
-    return data;
+    return [ null, data ];
   } catch (error) {
-    console.log('getTokenPrice error', error);
-    return {};
+    console.log('getPriceByIds error', error);
+    return [ error ];
   }
 };

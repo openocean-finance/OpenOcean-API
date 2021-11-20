@@ -17,16 +17,16 @@ export default (appInfo: EggAppInfo) => {
   config.security = {
     csrf: {
       enable: false,
-      ignoreJSON: true, 
+      ignoreJSON: true,
       useSession: true,
-      headerName: 'x-csrf-token', 
+      headerName: 'x-csrf-token',
     },
   };
 
   // session
   config.session = {
     key: 'EGG_SESS',
-    maxAge: 24 * 3600 * 1000, 
+    maxAge: 24 * 3600 * 1000,
     httpOnly: true,
     encrypt: true,
     path: '/',
@@ -42,7 +42,7 @@ export default (appInfo: EggAppInfo) => {
 
   // add url
   config.url = {
-    openocean: '',
+    openocean: 'https://ethapi.openocean.finance',
     '1inch_bsc': '',
     '1inch_polygon': '',
     matcha: '',

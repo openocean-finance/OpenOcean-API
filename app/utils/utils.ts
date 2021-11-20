@@ -2,9 +2,8 @@
 import { Logger } from 'egg-logger';
 import BigNumber from 'bignumber.js';
 import { pkgReq } from '../utils/commonReq';
-import { getIdsByChainId, getPlatByChainId } from './chain';
-import { getPriceByAddress, getPriceByIds } from './supply';
-import { getChainByChainId } from './chain';
+import { getPriceByIds } from './supply';
+import { getChainByChainId, isNativeToken, getIdsByChainId } from './chain';
 import tokenAddressIds from './token.json';
 
 export const logger = new Logger({});
@@ -39,59 +38,65 @@ export const haveSave = (outAmount: any, dexes: any): number => {
 };
 
 export const getDecimals = (address: string, chainId: string):any => {
-  let decimals = 18;
+  address = address.toLowerCase();
   if (tokenList && tokenList.has(chainId)) {
     const tokenArr = tokenList.get(chainId);
     for (const token of tokenArr) {
-      if (token.address === address) {
-        decimals = token.decimals;
-        break;
+      if (token.address.toLowerCase() === address) {
+        console.log('true');
+        return token;
       }
     }
   }
-  return decimals;
+  return { symbol: 'OOE',
+    name: 'OOE',
+    address: '0x9029FdFAe9A03135846381c7cE16595C3554e10A',
+    decimals: 18 };
 };
 
 export const getCacheList = async (urls: any) => {
-  tokenList.set('1', await pkgReq(urls['1'], undefined));
-  tokenList.set('56', await pkgReq(urls['56'], undefined));
-  tokenList.set('137', await pkgReq(urls['137'], undefined));
-  tokenList.set('43114', await pkgReq(urls['43114'], undefined));
+  console.log(urls);
+  const chainIds = Object.keys(urls);
+  for (const chainId of chainIds) {
+    const [ err, data ] = await pkgReq(urls[chainId], undefined);
+    if (!err) {
+      tokenList.set(chainId, data.data);
+    }
+  }
+};
+
+export const getId = (symbol, tokenAddress, chainId: string) => {
+  if (isNativeToken[tokenAddress]) {
+    return getIdsByChainId(chainId);
+  }
+  const chain = getChainByChainId(chainId);
+  symbol = symbol.toLowerCase();
+  return tokenAddressIds[`${chain}_${symbol}_${tokenAddress}`] || tokenAddressIds[`${chain}_${symbol}_${tokenAddress.toLocaleLowerCase()}`];
 };
 
 export const tokenToUsd = async (params: any):Promise<any> => {
-  const inTokenAddress = params.inTokenAddress.toLowerCase();
-  const outTokenAddress = params.outTokenAddress.toLowerCase();
-  const plat = getPlatByChainId(params.chainId);
-  const ids = getIdsByChainId(params.chainId);
-  const nativeTokenUsd = await getPriceByIds(ids);
-  const tokenUsd = await getPriceByAddress(plat, `${inTokenAddress},${outTokenAddress}`);
-  let [ inUsd, outUsd, nativeUsd ] = [ tokenUsd[inTokenAddress], tokenUsd[outTokenAddress], nativeTokenUsd[ids] ];
+  const { inTokenAddress, inTokenSymbol, outTokenAddress, outTokenSymbol, chainId } = params;
+  const inTokenId = getId(inTokenSymbol, inTokenAddress, chainId);
+  const outTokenId = getId(outTokenSymbol, outTokenAddress, chainId);
+  const nativeId = getIdsByChainId(params.chainId);
+  const ids = inTokenId + ',' + outTokenId + ',' + nativeId;
+  const [ error, price ] = await getPriceByIds(ids);
+  if (error) return [ null, { inUsd: 0, outUsd: 0, nativeUsd: 0 }];
+  return [ null, { inUsd: price[inTokenId] ? price[inTokenId].usd : 0,
+    outUsd: price[outTokenId] ? price[outTokenId].usd : 0,
+    nativeUsd: price[nativeId] ? price[nativeId].usd : 0,
+  }];
+};
 
-  if (!inUsd) {
-    const chain = getChainByChainId(params.chainId);
-    const symbol = params.inTokenSymbol;
-    const id = tokenAddressIds[`${chain}_${symbol}_${inTokenAddress}`];
-    const idUsd = await getPriceByIds(id);
-    if (idUsd && idUsd[ids]) {
-      inUsd = idUsd[ids].usd;
-    }
-  } else {
-    inUsd = inUsd.usd;
+export const getTokenList = (chainId: string) => {
+  if (tokenList.has(chainId)) {
+    return { code: 200, data: tokenList.get(chainId) };
   }
-  if (!outUsd) {
-    const chain = getChainByChainId(params.chainId);
-    const symbol = params.outTokenSymbol;
-    const id = tokenAddressIds[`${chain}_${symbol}_${outTokenAddress}`];
-    const idUsd = await getPriceByIds(id);
-    if (idUsd && idUsd[ids]) {
-      outUsd = idUsd[ids].usd;
-    }
-  } else {
-    outUsd = outUsd.usd;
-  }
-  if (nativeUsd) {
-    nativeUsd = nativeUsd.usd;
-  }
-  return { inUsd, outUsd, nativeUsd };
+  return { code: 204, error: `invalid params, chainId: ${chainId}` };
+};
+
+export const toFixed = function(val, decimal) {
+  if (!val) return '';
+  const value = Math.pow(10, decimal || 8);
+  return Math.floor(val * value) / value;
 };

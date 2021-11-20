@@ -9,6 +9,8 @@ export default class Matcha {
       reqUrl = 'https://avalanche.api.0x.org/swap/v1/price';
     } else if (params.chainId === '1') {
       reqUrl = 'https://cached-api.matcha.0x.org/swap/v1/price';
+    } else if (params.chainId === '66') {
+      reqUrl = 'https://fantom.api.0x.org/swap/v1/price';
     }
     const reqBody = {
       affiliateAddress: '0x86003b044f70dac0abc80ac8957305b6370893ed',
@@ -19,6 +21,8 @@ export default class Matcha {
       buyToken: params.outTokenAddress,
       skipValidation: 'true',
     };
-    return quoteRes(params, await pkgReq(reqUrl, reqBody));
+    const [ error, data ] = await pkgReq(reqUrl, reqBody);
+    if (error) return { code: 500, error };
+    return quoteRes(params, data);
   }
 }

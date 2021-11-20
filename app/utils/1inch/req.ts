@@ -22,7 +22,9 @@ export default class OneInch {
       Referer: 'https://app.1inch.io/',
       'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36',
     };
-    return quoteRes(params, await pkgReq(reqUrl, reqBody, headers));
+    const [ error, data ] = await pkgReq(reqUrl, reqBody, headers);
+    if (error) return { code: 500, error };
+    return quoteRes(params, data);
   }
 
 

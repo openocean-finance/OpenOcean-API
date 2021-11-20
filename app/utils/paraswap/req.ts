@@ -12,9 +12,11 @@ export default class Paraswap {
       network: params.chainId,
       otherExchangePrices: 'true',
       partner: 'paraswap.io',
-      srcDecimals: getDecimals(params.inTokenAddress, params.chainId),
-      destDecimals: getDecimals(params.outTokenAddress, params.chainId),
+      srcDecimals: getDecimals(params.inTokenAddress, params.chainId).decimals,
+      destDecimals: getDecimals(params.outTokenAddress, params.chainId).decimals,
     };
-    return quoteRes(params, await pkgReq(reqUrl, reqBody));
+    const [ error, data ] = await pkgReq(reqUrl, reqBody);
+    if (error) return { code: 500, error };
+    return quoteRes(params, data);
   }
 }

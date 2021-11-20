@@ -10,10 +10,10 @@ export const pkgReq = async (reqUrl: string, params: any, headers?:any): Promise
       responseType: 'json',
       params,
     });
-    // console.log('response result: ', result);
-    return result && result.data ? result.data : result;
+    return [ null, result && result.data ? result.data : result ];
+    // return result && result.data ? result.data : result;
   } catch (error) {
     console.log('error', error);
-    return {};
+    return [ error ];
   }
 };

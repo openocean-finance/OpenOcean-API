@@ -21,15 +21,6 @@ export default class MiddleWareController extends Controller {
   }
 
   /**
-   * swap transactions
-   */
-  public async swap_quote() {
-    const { ctx } = this;
-    logger.error('dddd');
-    ctx.body = await ctx.service.middleWare.swap_quote(ctx.request.query);
-  }
-
-  /**
    * swap
    */
   public async swap() {
@@ -75,11 +66,26 @@ export default class MiddleWareController extends Controller {
   }
 
   /**
+   * get transaction
+   */
+  public async getTransactionReceipt() {
+    const { ctx } = this;
+    logger.error('dddd');
+    ctx.body = await ctx.service.middleWare.getTransactionReceipt(ctx.request.query);
+  }
+
+  /**
    * transfer
    */
   public async transfer() {
     const { ctx } = this;
     logger.error('dddd');
     ctx.body = await ctx.service.middleWare.transfer(ctx.request.query);
+  }
+
+  public async ecRecover() {
+    const { ctx } = this;
+    logger.error('dddd');
+    ctx.body = await ctx.service.middleWare.ecRecover(ctx.request.body);
   }
 }

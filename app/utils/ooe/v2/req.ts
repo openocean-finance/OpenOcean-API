@@ -5,14 +5,12 @@ import { getRpcUrlByChainId, isNativeToken, getIdsByChainId } from '../../chain'
 import { approve } from '../../web3';
 import allAbi from '../../abi/erc20Abi.json';
 import openAbi from '../../abi/openAbi.json';
-import { decimals2Amount } from '../../utils';
+import { decimals2Amount, getId } from '../../utils';
 import { getDecimals } from '../../utils';
 import { getPriceByIds } from '../../supply';
 import { dealPromise } from '../../commonRes';
 import { getBalanceByEthers } from '../../ether';
-// const url = 'https://ethapi.openocean.finance';
-const url = 'http://ethapi.jys.in';
-// const contract = new Contract();
+const url = 'https://ethapi.openocean.finance';
 export default class OOEV2 {
   public async quote(params: any) {
     const chainId = params.chainId;
@@ -24,7 +22,7 @@ export default class OOEV2 {
       outTokenAddress: params.outTokenAddress,
       amount: params.amount,
       gasPrice: params.gasPrice,
-      slippage: params.slippage,
+      slippage: params.slippage * 100,
     };
     const [ error, data ] = await pkgReq(reqUrl, reqBody);
     if (error) return { code: 500, error };
@@ -33,14 +31,14 @@ export default class OOEV2 {
 
   public async swap(params) {
     const chainId = params.chainId;
-    if (params.exChange !== 'openoceanv2') return { code: 204, error: 'invalid params, exChange: ' + params.exChange };
+    if (params.exChange !== 'openoceanv2') return { code: 201, error: 'invalid params, exChange: ' + params.exChange };
     const reqUrl = `${url}/v2/${chainId}/swap`;
     const reqBody = {
       inTokenAddress: params.inTokenAddress,
       outTokenAddress: params.outTokenAddress,
       amount: params.amount,
       gasPrice: params.gasPrice,
-      slippage: params.slippage,
+      slippage: params.slippage > 30 ? 3000 : params.slippage * 100,
       account: params.account,
     };
     const [ error, swapResp ] = await pkgReq(reqUrl, reqBody);
@@ -58,12 +56,13 @@ export default class OOEV2 {
       data: swapResp.data,
     };
     if (!isNativeToken(params.inTokenAddress.toLowerCase())) {
-      await approve(exChangeResp.approveContract, params.account, params.amount, params.inTokenAddress, wallet);
+      const err = await approve(exChangeResp.approveContract, params.account, params.amount, params.inTokenAddress, wallet);
+      if (err) return { code: 206, error: 'approve error, please try later again' };
     } else {
       tx.value = ethers.BigNumber.from(swapResp.value);
     }
     const result = await this.getBalance({ chainId, account: params.account, inTokenAddress: params.inTokenAddress });
-    if (result.code === 200) {
+    if (result && result.code === 200) {
       const data = result.data;
       const rawBalance = data[0].raw;
       if (rawBalance < params.amount) return { code: 204, error: 'Insufficient balance' };
@@ -133,51 +132,62 @@ export default class OOEV2 {
     const iface = new ethers.utils.Interface(openAbi.abi);
     const [ err, hashData ] = await dealPromise(provider.getTransaction(params.hash));
     if (err || !hashData) return { code: 500, error: err };
-    console.log(hashData);
-    const { hash, blockNumber, from, to, timestamp, gasPrice } = hashData;
+    console.log(params.hash, hashData);
+
+    const { nonce, hash, blockNumber, from, to, gasPrice } = hashData;
+
+    const data = await provider.getBlockWithTransactions(blockNumber);
+    const { timestamp } = data;
     let resp;
     try {
-      resp = await iface.decodeFunctionData('swap', hashData.data);
+      resp = iface.decodeFunctionData('swap', hashData.data);
     } catch (error) {
-      return { code: 500, error };
+      return { code: 500, error: 'decodeFunctionData error: ' + JSON.stringify(error) };
     }
-    console.log(resp);
     const [ error, waitData ] = await dealPromise(hashData.wait());
     if (error || !waitData) return { code: 500, error };
 
     const { logs, gasUsed, transactionIndex } = waitData;
-    if (logs.length === 0) return { ret: 'fail' };
+    if (logs.length === 0) return { code: 500 };
     const log = logs[logs.length - 1];
     console.log(log.data);
     const { returnAmount } = await iface.decodeEventLog('Swapped', log.data);
     const { srcToken, dstToken, amount } = resp[1];
     const srcTokenMsg = getDecimals(srcToken, params.chainId);
     const dstTokenMsg = getDecimals(dstToken, params.chainId);
-    const ids = getIdsByChainId(params.chainId);
-    const [ errs, nativeUsd ] = await getPriceByIds(ids);
-    let usd = 0;
-    if (!errs || nativeUsd) {
-      usd = nativeUsd[ids] && nativeUsd[ids].usd ? nativeUsd[ids].usd : 0;
+    const dstId = getId(dstTokenMsg.symbol, dstToken, params.chainId);
+    const nativeId = getIdsByChainId(params.chainId);
+    const [ errs, usd ] = await getPriceByIds(nativeId + ',' + dstId);
+    let nativeUsd = 0;
+    let dstUsd = 0;
+    if (!errs || usd) {
+      nativeUsd = usd[nativeId] && usd[nativeId].usd ? usd[nativeId].usd : 0;
+      dstUsd = usd[dstId] && usd[dstId].usd ? usd[dstId].usd : 0;
     }
+    // gasUsd == gasLimit
     const gas = decimals2Amount(Number(gasPrice) * Number(gasUsed), 18);
-    console.log(gasPrice, gasUsed, gas);
-    const gasFee = (Number(gas) * usd).toFixed(2);
+    const outAmount = Number(decimals2Amount(Number(returnAmount), dstTokenMsg.decimals));
+    const gasFee = Number(gas) * nativeUsd;
+    const usd_valuation = outAmount * dstUsd;
     return {
       code: 200,
       data: {
+        nonce,
         hash,
         blockNumber,
         transactionIndex,
         from,
         to,
-        inTokenAddrss: srcToken,
+        inTokenAddress: srcToken,
         inTokenSymbol: srcTokenMsg.symbol,
-        outTokenAddrss: dstToken,
+        outTokenAddress: dstToken,
         outTokenSymbol: dstTokenMsg.symbol,
         inAmount: Number(decimals2Amount(Number(amount), srcTokenMsg.decimals)),
-        outAmount: Number(decimals2Amount(Number(returnAmount), dstTokenMsg.decimals)),
+        outAmount,
         gasFee,
         timestamp,
+        usd_valuation,
+        gasAmount: Number(gas),
       },
     };
   }
@@ -232,9 +242,13 @@ export default class OOEV2 {
     const rcpUrl = getRpcUrlByChainId(params.chainId);
     const provider = new ethers.providers.JsonRpcProvider(rcpUrl);
     const [ error, res ] = await dealPromise(provider.getTransactionReceipt(params.hash));
-    console.log(error, res);
     if (error) return { code: 500, error };
-    if (!res) return { code: 200, data: { status: -1 } };
+    if (!res) {
+      const url = `https://bscscan.com/tx/${params.hash}`;
+      const [ error, data ] = await pkgReq(url, '');
+      if (error || data.indexOf('Sorry, We are unable to locate this TxnHash') > -1) return { code: 200, data: { status: -2 } };
+      return { code: 200, data: { status: -1 } };
+    }
     const { to, from, contractAddress, transactionIndex, transactionHash, blockNumber, confirmations, status } = res || { status: '' };
     return {
       code: 200,

@@ -1,0 +1,5 @@
+{
+    "$id": "/chainIdScheam",
+    "type": "number",
+    "enum": [1, 56, 66, 128, 137, 250, 43114]
+}

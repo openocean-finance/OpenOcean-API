@@ -8,6 +8,7 @@ import tokenAddressIds from './token.json';
 
 export const logger = new Logger({});
 export const tokenList = new Map();
+export const gasPriceList = new Map();
 export const getShift = (a, b) => new BigNumber(a).shiftedBy(Number(b)).toFixed();
 
 export const decimals2Amount = (amount, decimals) => getShift(amount, -decimals);
@@ -55,7 +56,6 @@ export const getDecimals = (address: string, chainId: string):any => {
 };
 
 export const getCacheList = async (urls: any) => {
-  console.log(urls);
   const chainIds = Object.keys(urls);
   for (const chainId of chainIds) {
     const [ err, data ] = await pkgReq(urls[chainId], undefined);
@@ -66,7 +66,7 @@ export const getCacheList = async (urls: any) => {
 };
 
 export const getId = (symbol, tokenAddress, chainId: string) => {
-  if (isNativeToken[tokenAddress]) {
+  if (isNativeToken(tokenAddress)) {
     return getIdsByChainId(chainId);
   }
   const chain = getChainByChainId(chainId);
@@ -99,4 +99,22 @@ export const toFixed = function(val, decimal) {
   if (!val) return '';
   const value = Math.pow(10, decimal || 8);
   return Math.floor(val * value) / value;
+};
+
+export const gasPrice = async (urls: any) => {
+  const chainIds = Object.keys(urls);
+  for (const chainId of chainIds) {
+    console.log(urls[chainId]);
+    const [ err, data ] = await pkgReq(urls[chainId], undefined);
+    if (!err) {
+      const standard = (chainId === '1' ? data.base : data.standard);
+      const gas = parseInt(decimals2Amount(standard, 9));
+      gasPriceList.set(chainId, gas ?? 5);
+    }
+  }
+  console.log(gasPriceList);
+};
+export const getGasPrice = chainId => {
+  console.log(gasPriceList, chainId);
+  return gasPriceList.get(chainId) || 5;
 };

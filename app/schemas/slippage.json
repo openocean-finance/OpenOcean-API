@@ -1,0 +1,6 @@
+{
+    "$id": "/slippageScheam",
+    "type": "number",
+    "minimum": 30,
+    "maximum": 10000
+}

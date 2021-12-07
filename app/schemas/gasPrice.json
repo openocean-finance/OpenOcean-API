@@ -1,0 +1,5 @@
+{
+    "$id": "/gasPriceScheam",
+    "type": "number",
+    "minimum": 3
+}

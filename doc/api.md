@@ -14,6 +14,8 @@
 |outTokenAddress | string | 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE | buy token Address |
 |amount | number | 1 | sell amout |
 |gasPrice | number | 5 | procedure rates |
+|slippage | number | 1 |  1 equals 1%, 1%-100%|
+|withUsd | bool | true | true/false|
 * Example:
 #### request:
     https://open-api.openocean.finance/v1/cross/quote?inTokenSymbol=OOE&inTokenAddress=0x9029FdFAe9A03135846381c7cE16595C3554e10A&outTokenSymbol=BNB&outTokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&amount=1&gasPrice=5&slippage=100&exChange=openoceanv2&chainId=56
@@ -22,7 +24,7 @@
 ```
  {
      code: 200,
-     error: "",  
+     error: "", 
      data: {
         "inToken": {
             "symbol": "OOE",
@@ -34,7 +36,7 @@
             "symbol": "BNB",
             "chainId": "56",
             "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-            "outUsd": "0.6984" // outAmout to usd
+            "outUsd": "0.6984" // outAmount to usd
         },
         "inAmount": "1",
         "outAmount": "0.0014",
@@ -191,6 +193,7 @@
 |gasPrice | number | 5 | procedure rates |
 |account | string? | wallet address | It can be read from the configuration file|
 |privateKey | string? | wallet privateKey| It can be read from the configuration file|
+|slippage | number | 1 |  1 equals 1%, 1%-100%|
 * Example:
 #### request:
     https://open-api.openocean.finance/v1/cross/swap?chainId=56&exChange=openoceanv2&inTokenSymbol=OOE&inTokenAddress=0x9029FdFAe9A03135846381c7cE16595C3554e10A&outTokenSymbol=USDC&outTokenAddress=0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d&amount=5&gasPrice=5
@@ -303,27 +306,13 @@
     }
 }
 ```
+## Common error codes
 
-### 9、recover
-#### request
- * Method: post
- * Url:https://open-api.openocean.finance/v1/cross/recover
- * Parameters:
-
-| parameter | type | example | description |
-| :-----------: | :-----------: | :-----------: | :-----------: |
-|chainId | number | 56  |1/5/137/43114|
-|msg| string | |Either signed message or hash|
-|signature| string| | The raw RLP encoded signature|
-* Example
-#### request body:
-#### response:
-```
-{
-    code: 200,
-    error: "",
-    data: {
-        account: "0x98ee7489674fbc7073c31ed2bdf7c334bef02788b600ac726b792a2398f7fd16"
-    }
-}
-```
+| code | reason |
+| :-----------: | :-----------: |
+|201 | invalid request format | 
+|204| Insufficient balance|
+|205|suspend trading|
+|206|approve fail|
+|207|trade fail|
+| 500 | Internal Server Error|

@@ -1,5 +1,5 @@
 import { Subscription } from 'egg';
-import { getCacheList } from '../utils/utils';
+import { getCacheList, gasPrice } from '../utils/utils';
 import { getDexList } from '../utils/commonRes';
 
 export default class tokenListMonitor extends Subscription {
@@ -13,7 +13,7 @@ export default class tokenListMonitor extends Subscription {
 
 
   async subscribe() {
-    const dexUrl = this.app.config.url.openocean;
+    const url = this.app.config.url.openocean;
     const urls = {
       1: 'https://market-api.openocean.finance/v2/eth/token',
       56: 'https://market-api.openocean.finance/v2/bsc/token',
@@ -27,14 +27,22 @@ export default class tokenListMonitor extends Subscription {
       tron: 'https://market-api.openocean.finance/v2/tron/token',
     };
     const dexUrls = {
-      1: `${dexUrl}/v2/1/dex`,
-      56: `${dexUrl}/v2/56/dex`,
-      137: `${dexUrl}/v2/137/dex`,
-      250: `${dexUrl}/v2/250/dex`,
-      43114: `${dexUrl}/v2/43114/dex`,
+      1: `${url}/v2/1/dex`,
+      56: `${url}/v2/56/dex`,
+      137: `${url}/v2/137/dex`,
+      250: `${url}/v2/250/dex`,
+      43114: `${url}/v2/43114/dex`,
+    };
+    const gasUrls = {
+      1: `${url}/v2/1/gas-price`,
+      56: `${url}/v2/56/gas-price`,
+      137: `${url}/v2/137/gas-price`,
+      43114: `${url}/v2/43114/gas-price`,
+      250: `${url}/v1/fantom/gas-price`,
     };
 
     await getCacheList(urls);
     await getDexList(dexUrls);
+    await gasPrice(gasUrls);
   }
 }

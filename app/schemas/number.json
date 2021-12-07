@@ -1,0 +1,7 @@
+{
+    "$id": "/numberSchema",
+    "type": "object",
+    "properties": {
+        "name": {"$ref": "./chainId.json#/definitions/chainIdSchema"}
+    }
+}

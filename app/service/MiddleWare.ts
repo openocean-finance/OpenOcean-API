@@ -4,12 +4,17 @@ import OOEV2 from '../utils/ooe/v2/req';
 import OneInch from '../utils/1inch/req';
 import Matcha from '../utils/matcha/req';
 import Paraswap from '../utils/paraswap/req';
-import { amount2Decimals, getDecimals, getTokenList } from '../utils/utils';
+import { amount2Decimals, getDecimals, getTokenList, getGasPrice } from '../utils/utils';
 import { ethers } from 'ethers';
 import { getRpcUrlByChainId } from '../utils/chain';
 import { ecRecover } from '../utils/web3';
 import { dealPromise } from '../utils/commonRes';
+import quoteSchema from '../schemas/quote.json';
+import swapSchema from '../schemas/swap.json';
 
+import Ajv from 'ajv';
+const options = { allErrors: true }; // 具体的配置
+const ajv = new Ajv(options); // 某些情况下，需要改为 new Ajv.default()
 
 /**
  * MiddleWare Service
@@ -29,6 +34,14 @@ export default class MiddleWare extends Service {
    * quote
    */
   public async quote(params: any) {
+    params.amount = +params.amount;
+    params.gasPrice = +params.gasPrice;
+    params.slippage = +params.slippage;
+    params.chainId = +params.chainId;
+    console.log(params.slippage > 30 ? 3000 : params.slippage * 100);
+    // 开启校验
+    const isValid = ajv.validate(quoteSchema, params); // schemas 具体配置，data数据
+    if (!isValid) return { code: 201, error: ajv.errorsText() };
     const { decimals } = getDecimals(params.inTokenAddress, params.chainId);
     // The original quantity is needed to calculate inUsd
     params.inAmount = params.amount;
@@ -43,6 +56,14 @@ export default class MiddleWare extends Service {
  * swap
  */
   public async swap(params: any) {
+    params.amount = +params.amount;
+    params.gasPrice = +params.gasPrice;
+    params.slippage = +params.slippage;
+    params.chainId = +params.chainId;
+    // 开启校验
+    const isValid = ajv.validate(swapSchema, params); // schemas 具体配置，data数据
+
+    if (!isValid) return { code: 201, error: ajv.errorsText() };
     const { decimals } = getDecimals(params.inTokenAddress, params.chainId);
     // The original quantity is needed to calculate inUsd
     params.inAmount = params.amount;
@@ -119,5 +140,8 @@ export default class MiddleWare extends Service {
       return { code: 500, error };
     }
     return { code: 200, data };
+  }
+  public async getGasPrice(chaindId: string) {
+    return { code: 200, data: { gasPrice: await getGasPrice(chaindId) } };
   }
 }

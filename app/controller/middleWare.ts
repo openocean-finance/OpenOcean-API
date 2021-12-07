@@ -39,6 +39,15 @@ export default class MiddleWareController extends Controller {
   }
 
   /**
+   * token list
+   */
+  public async getGasPrice() {
+    const { ctx } = this;
+    const { chainId } = ctx.params || {};
+    ctx.body = await ctx.service.middleWare.getGasPrice(chainId);
+  }
+
+  /**
    * create wallet
    */
   public async createWallet() {

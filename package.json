@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@ethersproject/abi": "^5.0.13",
+    "ajv": "^8.8.2",
     "axios": "^0.21.4",
     "bignumber.js": "^9.0.1",
     "egg": "^2.6.1",

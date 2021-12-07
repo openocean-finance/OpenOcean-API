@@ -1,0 +1,5 @@
+{
+    "$id": "/amountSchema",
+    "type": "number",
+    "exclusiveMinimum": 0
+}

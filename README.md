@@ -1,3 +1,6 @@
+## Notice
+We strongly recommend that users deploy it themselves, rather than simply call it!
+
 # openocean-api
 
 openocean-api using typescript && egg
@@ -31,3 +34,5 @@ $ npm start
 
 - Node.js 8.x
 - Typescript 2.8+
+
+

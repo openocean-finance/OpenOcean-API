@@ -13,7 +13,7 @@
 |outTokenSymbol | string | BNB | buy token name |
 |outTokenAddress | string | 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE | buy token Address |
 |amount | number | 1 | sell amout |
-|gasPrice | number | 5 | procedure rates |
+|gasPrice | number | 5 | you can set it yourself or get it through [getGasPrice](#jump) |
 |slippage | number | 1 |  1 equals 1%, 1%-100%|
 |withUsd | bool | true | true/false|
 * Example:
@@ -190,7 +190,7 @@
 |outTokenSymbol | string | USDC | buy token name |
 |outTokenAddress | string | 0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d | buy token address |
 |amount | number | 5 | sell token amount |
-|gasPrice | number | 5 | procedure rates |
+|gasPrice | number | 5 | you can set it yourself or get it through [getGasPrice](#jump)|
 |account | string? | wallet address | It can be read from the configuration file|
 |privateKey | string? | wallet privateKey| It can be read from the configuration file|
 |slippage | number | 1 |  1 equals 1%, 1%-100%|
@@ -288,7 +288,7 @@
 |inTokenSymbol | string | OOE | transfer token name |
 |decimals | number | 18 | unit conversion|
 |amount | number | 5 | transfer number|
-|gasPrice| number | 5|procedure rates|
+|gasPrice| number | 5|you can set it yourself or get it through [getGasPrice](#jump)|
 |targetAddress | string | 0x929B44e589AC4dD99c0282614e9a844Ea9483C69| wallet address|
 |account | string? | wallet address | It can be read from the configuration file |
 |privateKey | string? | wallet privateKey|  It can be read from the configuration file|
@@ -303,6 +303,27 @@
     error: "",
     data: {
         hash: "0xcec6125eebcfb6a5e32341d9bc2571946dbf2a1db018e333abd644f505840529"
+    }
+}
+```
+
+### <span id="jump">9、getGasPrice</span>
+ * Method: get
+ * Url: https://open-api.openocean.finance/v1/:chainId/getGasPrice
+ * Parameters:
+
+| parameter | type | example | description |
+| :-----------: | :-----------: | :-----------: | :-----------: |
+|chainId | number | 56| chain id (1/56/137/41334) | 
+* Example:
+#### request:
+    https://open-api.openocean.finance/v1/56/getGasPrice
+#### response:
+```
+{
+    code: 200,
+    data: {
+        price: 5 // default 5
     }
 }
 ```

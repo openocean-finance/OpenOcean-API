@@ -6,10 +6,12 @@ type AnyClass = new (...args: any[]) => any;
 type AnyFunc<T = any> = (...args: any[]) => T;
 type CanExportFunc = AnyFunc<Promise<any>> | AnyFunc<IterableIterator<any>>;
 type AutoInstanceType<T, U = T extends CanExportFunc ? T : T extends AnyFunc ? ReturnType<T> : T> = U extends AnyClass ? InstanceType<U> : U;
+import ExportGlobData from '../../../app/service/GlobData';
 import ExportMiddleWare from '../../../app/service/MiddleWare';
 
 declare module 'egg' {
   interface IService {
+    globData: AutoInstanceType<typeof ExportGlobData>;
     middleWare: AutoInstanceType<typeof ExportMiddleWare>;
   }
 }

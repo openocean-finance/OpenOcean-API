@@ -1,7 +1,6 @@
 
 import { Logger } from 'egg-logger';
 import BigNumber from 'bignumber.js';
-import { pkgReq } from '../utils/commonReq';
 import { getPriceByIds } from './supply';
 import { getChainByChainId, isNativeToken, getIdsByChainId } from './chain';
 import tokenAddressIds from './token.json';
@@ -55,16 +54,6 @@ export const getDecimals = (address: string, chainId: string):any => {
     decimals: 18 };
 };
 
-export const getCacheList = async (urls: any) => {
-  const chainIds = Object.keys(urls);
-  for (const chainId of chainIds) {
-    const [ err, data ] = await pkgReq(urls[chainId], undefined);
-    if (!err) {
-      tokenList.set(chainId, data.data);
-    }
-  }
-};
-
 export const getId = (symbol, tokenAddress, chainId: string) => {
   if (isNativeToken(tokenAddress)) {
     return getIdsByChainId(chainId);
@@ -101,20 +90,3 @@ export const toFixed = function(val, decimal) {
   return Math.floor(val * value) / value;
 };
 
-export const gasPrice = async (urls: any) => {
-  const chainIds = Object.keys(urls);
-  for (const chainId of chainIds) {
-    console.log(urls[chainId]);
-    const [ err, data ] = await pkgReq(urls[chainId], undefined);
-    if (!err) {
-      const standard = (chainId === '1' ? data.base : data.standard);
-      const gas = parseInt(decimals2Amount(standard, 9));
-      gasPriceList.set(chainId, gas ?? 5);
-    }
-  }
-  console.log(gasPriceList);
-};
-export const getGasPrice = chainId => {
-  console.log(gasPriceList, chainId);
-  return gasPriceList.get(chainId) || 5;
-};

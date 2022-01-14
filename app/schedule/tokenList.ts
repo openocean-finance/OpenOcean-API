@@ -1,12 +1,11 @@
 import { Subscription } from 'egg';
-import { getCacheList, gasPrice } from '../utils/utils';
-import { getDexList } from '../utils/commonRes';
+import { getCacheList, gasPrice, getDexList } from '../service/GlobData';
 
 export default class tokenListMonitor extends Subscription {
   static get schedule() {
     return {
       interval: '10m',
-      type: 'all',
+      type: 'worker',
       immediate: true,
     };
   }
@@ -41,8 +40,10 @@ export default class tokenListMonitor extends Subscription {
       250: `${url}/v1/fantom/gas-price`,
     };
 
-    await getCacheList(urls);
-    await getDexList(dexUrls);
-    await gasPrice(gasUrls);
+    const tokenList: any = await getCacheList(urls);
+    const dexList: any = await getDexList(dexUrls);
+    const gasPriceList: any = await gasPrice(gasUrls);
+    this.ctx.app.messenger.sendToApp('data', { tokenList, gasPriceList, dexList });
+
   }
 }

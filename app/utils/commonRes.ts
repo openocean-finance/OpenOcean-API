@@ -1,20 +1,8 @@
 import { toFixed, tokenToUsd } from './utils';
 import { getDecimals, decimals2Amount } from './utils';
-import { pkgReq } from './commonReq';
 export const dexList = new Map();
 
 
-export const getDexList = async (urls: any) => {
-  console.log(urls);
-  const chainIds = Object.keys(urls);
-  for (const chainId of chainIds) {
-    const [ err, data ] = await pkgReq(urls[chainId], undefined);
-    if (!err) {
-      dexList.set(chainId, data);
-    }
-  }
-  console.log(dexList);
-};
 export const dealPromise = promise => {
   return promise.then(data => {
     return [ null, data ];

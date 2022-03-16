@@ -7,13 +7,14 @@ import Paraswap from '../utils/paraswap/req';
 import { amount2Decimals, getDecimals, getTokenList } from '../utils/utils';
 import { getDexList, getGasPrice } from './GlobData';
 import { ethers } from 'ethers';
-import { getRpcUrlByChainId } from '../utils/chain';
-import { ecRecover } from '../utils/web3';
+import { getRpcUrlByChainId, isNativeToken } from '../utils/chain';
+import { approve, ecRecover } from '../utils/web3';
 import { dealPromise } from '../utils/commonRes';
 import quoteSchema from '../schemas/quote.json';
 import swapSchema from '../schemas/swap.json';
 
 import Ajv from 'ajv';
+import { allowance } from '../utils/ether';
 const options = { allErrors: true };
 const ajv = new Ajv(options);
 
@@ -144,5 +145,30 @@ export default class MiddleWare extends Service {
   }
   public async getGasPrice(chaindId: string) {
     return { code: 200, data: { gasPrice: await getGasPrice(chaindId) } };
+  }
+
+  public async approve(params: any) {
+    const rcpUrl = getRpcUrlByChainId(params.chainId);
+    const provider = new ethers.providers.JsonRpcProvider(rcpUrl);
+    const in_token_decimals = getDecimals(params.inTokenAddress, params.chainId).decimals;
+    params.amount = amount2Decimals(params.amount, in_token_decimals || 18);
+    const wallet = new ethers.Wallet(params.privateKey, provider);
+    if (isNativeToken(params.inTokenAddress)) {
+      return { code: 200, data: { message: 'no need approve' } };
+    }
+    const err = await approve(this.config.approveContractAddress, params.account, params.amount, params.inTokenAddress, wallet);
+    if (err) return { code: 206, error: 'approve error, please try later again' };
+    return { code: 200 };
+  }
+  public async allowance(params: any) {
+    const rcpUrl = getRpcUrlByChainId(params.chainId);
+    const provider = new ethers.providers.JsonRpcProvider(rcpUrl);
+    const in_token_decimals = getDecimals(params.inTokenAddress, params.chainId).decimals;
+    params.amount = amount2Decimals(params.amount, in_token_decimals || 18);
+    const wallet = new ethers.Wallet(params.privateKey, provider);
+    if (isNativeToken(params.inTokenAddress)) {
+      return { code: 200, data: { allowance: Number('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff') } };
+    }
+    return await allowance(this.config.approveContractAddress, params.account, params.inTokenAddress, wallet);
   }
 }

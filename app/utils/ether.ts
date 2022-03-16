@@ -115,3 +115,9 @@ export async function getBalanceByEthers(params) {
   }
   return result;
 }
+
+export const allowance = async (approveContract: string, walletAddress: string, inTokenAddress: string, wallet: ethers.Wallet) => {
+  const contract = await new Contract(inTokenAddress, erc20Abi.abi, wallet);
+  const bal = await contract.allowance(walletAddress, approveContract);
+  return { code: 200, data: { allowance: Number(bal) } };
+};

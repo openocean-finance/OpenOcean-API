@@ -4,7 +4,9 @@ import { pkgReq } from '../utils/commonReq';
 import { decimals2Amount } from '../utils/utils';
 export let tokenList :any = {};
 export let gasPriceList :any = {};
-export let dexList :any = {};
+export let dexList :any = {
+  401: [{ index: 0, code: 'innoswap', name: 'innoswap' }],
+};
 
 
 export const getCacheList = async (urls: any) => {
@@ -19,7 +21,7 @@ export const getCacheList = async (urls: any) => {
   return tokenList;
 };
 
-export const getDexList = async (urls: any) => {
+export const getCacheDexList = async (urls: any) => {
   const chainIds = Object.keys(urls);
   for (const chainId of chainIds) {
     const [ err, data ] = await pkgReq(urls[chainId], undefined);
@@ -55,6 +57,12 @@ export const getTokenList = (chainId: string) => {
   return { code: 204, error: `invalid params, chainId: ${chainId}` };
 };
 
+export const getDexList = (chainId: string) => {
+  if (dexList[chainId]) {
+    return { code: 200, data: dexList[chainId] };
+  }
+  return { code: 204, error: `invalid params, chainId: ${chainId}` };
+};
 
 /**
  * News Service

@@ -5,7 +5,7 @@ import OneInch from '../utils/1inch/req';
 import Matcha from '../utils/matcha/req';
 import Paraswap from '../utils/paraswap/req';
 import { amount2Decimals, getDecimals, getTokenList } from '../utils/utils';
-import { getGasPrice } from './GlobData';
+import { getDexList, getGasPrice } from './GlobData';
 import { ethers } from 'ethers';
 import { getRpcUrlByChainId } from '../utils/chain';
 import { ecRecover } from '../utils/web3';
@@ -14,8 +14,8 @@ import quoteSchema from '../schemas/quote.json';
 import swapSchema from '../schemas/swap.json';
 
 import Ajv from 'ajv';
-const options = { allErrors: true }; // 具体的配置
-const ajv = new Ajv(options); // 某些情况下，需要改为 new Ajv.default()
+const options = { allErrors: true };
+const ajv = new Ajv(options);
 
 /**
  * MiddleWare Service
@@ -40,8 +40,7 @@ export default class MiddleWare extends Service {
     params.slippage = +params.slippage;
     params.chainId = +params.chainId;
     console.log(params.slippage > 30 ? 3000 : params.slippage * 100);
-    // 开启校验
-    const isValid = ajv.validate(quoteSchema, params); // schemas 具体配置，data数据
+    const isValid = ajv.validate(quoteSchema, params);
     if (!isValid) return { code: 201, error: ajv.errorsText() };
     const { decimals } = getDecimals(params.inTokenAddress, params.chainId);
     // The original quantity is needed to calculate inUsd
@@ -61,8 +60,7 @@ export default class MiddleWare extends Service {
     params.gasPrice = +params.gasPrice;
     params.slippage = +params.slippage;
     params.chainId = +params.chainId;
-    // 开启校验
-    const isValid = ajv.validate(swapSchema, params); // schemas 具体配置，data数据
+    const isValid = ajv.validate(swapSchema, params);
 
     if (!isValid) return { code: 201, error: ajv.errorsText() };
     const { decimals } = getDecimals(params.inTokenAddress, params.chainId);
@@ -84,7 +82,9 @@ export default class MiddleWare extends Service {
   public async tokenList(params) {
     return getTokenList(params.chainId);
   }
-
+  public async dexList(params) {
+    return getDexList(params.chainId);
+  }
   /**
    * getList token list
    */

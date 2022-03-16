@@ -1,5 +1,5 @@
 ## interface document
-### 1、Quote price
+### 1. Quote price
  * Method: get
  * Url: https://open-api.openocean.finance/v1/cross/quote
  * Parameters:

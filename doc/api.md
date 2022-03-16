@@ -48,7 +48,7 @@
  }
  
 ```    
-### 2、Get token list
+### 2. Get token list
  * Method: get
  * Url: https://open-api.openocean.finance/v1/cross/tokenList
  * Parameters:
@@ -117,7 +117,7 @@
     ]
 }
 ```
-### 3、create wallet
+### 3. create wallet
 
  * Method: get
  * Url: https://open-api.openocean.finance/v1/cross/createWallet
@@ -142,7 +142,7 @@
 ```
 
 
-### 4、get balance
+### 4. get balance
  * Method: get
  * Url: https://open-api.openocean.finance/v1/cross/getBalance
  * Parameters:
@@ -176,7 +176,7 @@
 }
 ```
 
-### 5、swap
+### 5. swap
  * Method: get
  * Url: https://open-api.openocean.finance/v1/cross/swap
  * Parameters:
@@ -208,7 +208,7 @@
 }
 ```
 
-### 6、get transaction
+### 6. get transaction
  * Method: get
  * Url: https://open-api.openocean.finance/v1/cross/getTransaction
  * Parameters:
@@ -245,7 +245,7 @@
 }
 ```
 
-### 7、getTransactionReceipt
+### 7. getTransactionReceipt
  * Method: get
  * Url: https://open-api.openocean.finance/v1/cross/getTransactionReceipt
  * Parameters:
@@ -276,7 +276,7 @@
     }
 }
 ```
-### 8、transfer
+### 8. transfer
  * Method: get
  * Url: https://open-api.openocean.finance/v1/cross/transfer
  * Parameters:
@@ -307,7 +307,7 @@
 }
 ```
 
-### <span id="jump">9、getGasPrice</span>
+### <span id="jump">9. getGasPrice</span>
  * Method: get
  * Url: https://open-api.openocean.finance/v1/:chainId/getGasPrice
  * Parameters:

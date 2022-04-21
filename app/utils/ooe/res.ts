@@ -1,12 +1,12 @@
-import { pkgRes } from '../../commonRes';
-import { haveSave } from '../../utils';
+import { pkgRes } from '../commonRes';
+import { haveSave } from '../utils';
 
 export const quoteRes = (params: any, respData: any): any => {
   // hava save
-  console.log(respData);
   const save = haveSave(respData.outAmount, respData.dexes);
   params.save = save;
-  console.log(save);
+  params.path = respData.path;
+  params.dexes = respData.dexes;
   if (params.exChange === 'openoceanv2') return pkgRes(params, respData.outAmount, respData.estimatedGas);
   const dexes = respData.dexes;
   let outAmount;
@@ -17,10 +17,9 @@ export const quoteRes = (params: any, respData: any): any => {
       }
     }
   }
-  console.log(outAmount, respData.outAmount);
   if (outAmount) {
     return pkgRes(params, outAmount, respData.estimatedGas);
   }
-  return { code: 204, error: 'invalid exChange ' + params.exChange };
+  return { code: 201, error: 'invalid exChange ' + params.exChange };
 
 };

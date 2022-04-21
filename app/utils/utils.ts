@@ -4,10 +4,9 @@ import BigNumber from 'bignumber.js';
 import { getPriceByIds } from './supply';
 import { getChainByChainId, isNativeToken, getIdsByChainId } from './chain';
 import tokenAddressIds from './token.json';
+import { tokenList } from '../service/GlobData';
 
 export const logger = new Logger({});
-export const tokenList = new Map();
-export const gasPriceList = new Map();
 export const getShift = (a, b) => new BigNumber(a).shiftedBy(Number(b)).toFixed();
 
 export const decimals2Amount = (amount, decimals) => getShift(amount, -decimals);
@@ -38,20 +37,31 @@ export const haveSave = (outAmount: any, dexes: any): number => {
 };
 
 export const getDecimals = (address: string, chainId: string):any => {
-  address = address.toLowerCase();
-  if (tokenList && tokenList.has(chainId)) {
-    const tokenArr = tokenList.get(chainId);
+  chainId = chainId + '';
+  if (tokenList && tokenList[chainId]) {
+    const tokenArr = tokenList[chainId];
     for (const token of tokenArr) {
-      if (token.address.toLowerCase() === address) {
+      if (token.address.toLowerCase() === address.toLocaleLowerCase()) {
         console.log('true');
         return token;
       }
     }
   }
-  return { symbol: 'OOE',
-    name: 'OOE',
-    address: '0x9029FdFAe9A03135846381c7cE16595C3554e10A',
-    decimals: 18 };
+  return {};
+};
+
+export const getTokenAddress = (symbol: string, chainId: string):any => {
+  chainId = chainId + '';
+  if (tokenList && tokenList[chainId]) {
+    const tokenArr = tokenList[chainId];
+    for (const token of tokenArr) {
+      if (token.symbol.toLowerCase() === symbol.toLocaleLowerCase()) {
+        console.log('true');
+        return token.address;
+      }
+    }
+  }
+  return {};
 };
 
 export const getId = (symbol, tokenAddress, chainId: string) => {
@@ -59,7 +69,7 @@ export const getId = (symbol, tokenAddress, chainId: string) => {
     return getIdsByChainId(chainId);
   }
   const chain = getChainByChainId(chainId);
-  symbol = symbol.toLowerCase();
+  if (symbol) symbol = symbol.toLowerCase();
   return tokenAddressIds[`${chain}_${symbol}_${tokenAddress}`] || tokenAddressIds[`${chain}_${symbol}_${tokenAddress.toLocaleLowerCase()}`];
 };
 
@@ -77,16 +87,16 @@ export const tokenToUsd = async (params: any):Promise<any> => {
   }];
 };
 
-export const getTokenList = (chainId: string) => {
-  if (tokenList.has(chainId)) {
-    return { code: 200, data: tokenList.get(chainId) };
-  }
-  return { code: 204, error: `invalid params, chainId: ${chainId}` };
-};
-
 export const toFixed = function(val, decimal) {
   if (!val) return '';
   const value = Math.pow(10, decimal || 8);
   return Math.floor(val * value) / value;
+};
+
+export const toNonExponential = function(num?: any) {
+  if (!num) return '';
+  const _num = Number(num);
+  const m: any = _num.toExponential().match(/\d(?:\.(\d*))?e([+-]\d+)/);
+  return _num.toFixed(Math.max(0, (m[1] || '').length - m[2]));
 };
 

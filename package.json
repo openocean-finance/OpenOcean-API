@@ -22,7 +22,9 @@
     "clean": "ets clean"
   },
   "dependencies": {
+    "@1inch/multicall": "^1.0.6",
     "@ethersproject/abi": "^5.0.13",
+    "@terra-money/terra.js": "^3.0.11",
     "ajv": "^8.8.2",
     "axios": "^0.21.4",
     "bignumber.js": "^9.0.1",

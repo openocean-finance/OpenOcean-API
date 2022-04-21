@@ -12,8 +12,8 @@ export default class Paraswap {
       network: params.chainId,
       otherExchangePrices: 'true',
       partner: 'paraswap.io',
-      srcDecimals: getDecimals(params.inTokenAddress, params.chainId).decimals,
-      destDecimals: getDecimals(params.outTokenAddress, params.chainId).decimals,
+      srcDecimals: getDecimals(params.inTokenAddress, params.chainId).decimals || params.in_token_decimals,
+      destDecimals: getDecimals(params.outTokenAddress, params.chainId).decimals || params.out_token_decimals,
     };
     const [ error, data ] = await pkgReq(reqUrl, reqBody);
     if (error) return { code: 500, error };

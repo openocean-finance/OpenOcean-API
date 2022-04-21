@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { logger } from './utils';
 export const pkgReq = async (reqUrl: string, params: any, headers?:any): Promise<any> => {
-  console.log('request url: ', reqUrl);
-  console.log('request body: ', params);
+  console.log(111111111, reqUrl, params);
   try {
     const result = await axios({
       url: reqUrl,
@@ -13,7 +13,7 @@ export const pkgReq = async (reqUrl: string, params: any, headers?:any): Promise
     return [ null, result && result.data ? result.data : result ];
     // return result && result.data ? result.data : result;
   } catch (error) {
-    console.log('error', error);
+    logger.error(error);
     return [ error ];
   }
 };

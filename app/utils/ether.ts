@@ -1,19 +1,27 @@
 import { Contract, ethers } from 'ethers';
-import { getRpcUrlByChainId } from './chain';
 import erc20Abi from './abi/erc20Abi.json';
 import BigNumber from 'bignumber.js';
 import { pkgReq } from './commonReq';
 import { amount2Decimals, getDecimals, decimals2Amount } from './utils';
 import { dealPromise } from './commonRes';
-import { isNativeToken } from './chain';
+import { isNativeToken } from '../config';
+import { getPublicRpcUrlByChainId } from './chain';
 import allAbi from '../utils/abi/erc20Abi.json';
 // get contract
+// const approveContractUrl = 'https://ethapi.openocean.finance/v2/';
+
 const approveContractUrl = 'https://ethapi.openocean.finance/v2/';
+
+
+export const getProvider = async (chainId: any) => {
+  const rcpUrl = getPublicRpcUrlByChainId(chainId);
+  const provider = new ethers.providers.JsonRpcProvider(rcpUrl);
+  return provider;
+};
 
 export const getMyWallet = async (chainId: any, privateKey: string) => {
   // get rpcUrl
-  const rpcUrl = getRpcUrlByChainId(chainId);
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  const provider = await getProvider(chainId);
   const myWallet = new ethers.Wallet(privateKey, provider);
   return { provider, myWallet };
 };
@@ -53,7 +61,7 @@ export async function sendEthApprove(account, inToken, type, amount, gasPrice, t
   const contract = new myWallet.eth.Contract(erc20Abi.abi, inToken);
   const approveAmount =
     type === '1'
-      ? new BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').toFixed(
+      ? new BigNumber('0xffffffffffffffffffffffffffffffffff').toFixed(
         0,
         1,
       )
@@ -62,27 +70,44 @@ export async function sendEthApprove(account, inToken, type, amount, gasPrice, t
     from: account,
   });
   console.log(account, amount2Decimals(gasPrice, 9), gasAmount);
-  return await contract.methods.approve(toContract, approveAmount).send({
-    from: account,
-    gasPrice: amount2Decimals(gasPrice, 9),
-    gas: 210000,
-  });
+  try {
+    await contract.methods.approve(toContract, approveAmount).send({
+      from: account,
+      gasPrice: amount2Decimals(gasPrice, 9),
+      gas: 210000,
+    });
+    return null;
+  } catch (error) {
+    console.log('approve', error);
+    return error;
+  }
 }
 
 export async function getBalanceByEthers(params) {
   const { chainId, account, inTokenAddress } = params;
-  const bool = ethers.utils.isAddress(account);
-  if (!bool) {
-    return { code: 204, error: `invalid params, please check your special config address: ${account}` };
-  }
-  const tokenAddressArr = inTokenAddress.split(',');
   const result: any = {
     code: 200,
     data: [],
   };
-  const rpcUrl = getRpcUrlByChainId(chainId);
-  if (!rpcUrl) return { code: 204, error: `invalid params, chainId: ${chainId}` };
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  const tokenAddressArr = inTokenAddress.split(',');
+
+  if (Number(chainId) === 401) {
+    const [ error, data ] = await pkgReq('https://ethapi.openocean.finance/v1/ont/token-balance', { token: tokenAddressArr, account }, {});
+    if (error) return { code: 204, error };
+    for (const address in data) {
+      const tokenMsg = getDecimals(address, chainId);
+      const { symbol } = tokenMsg;
+      const { balance, raw } = data[address];
+      result.data.push({ symbol, balance, raw });
+    }
+    return result;
+  }
+  const bool = ethers.utils.isAddress(account);
+  if (!bool) {
+    return { code: 204, error: `invalid params, please check your special config address: ${account}` };
+  }
+  const rcpUrl = getPublicRpcUrlByChainId(params.chainId);
+  const provider = new ethers.providers.JsonRpcProvider(rcpUrl);
   for (let tokenAddress of tokenAddressArr) {
     tokenAddress = tokenAddress.trim();
     const tokenMsg = getDecimals(tokenAddress, chainId);
@@ -100,8 +125,8 @@ export async function getBalanceByEthers(params) {
       if (error) return { code: 500, error };
       raw = data;
     }
-    raw = Number(raw);
-    const balance = Number(decimals2Amount(Number(raw), decimals));
+    raw = raw.toString();
+    const balance = decimals2Amount(raw, decimals || 18);
     const data = {
       symbol,
       balance,
@@ -115,6 +140,7 @@ export async function getBalanceByEthers(params) {
   }
   return result;
 }
+
 
 export const allowance = async (approveContract: string, walletAddress: string, inTokenAddress: string, wallet: ethers.Wallet) => {
   const contract = await new Contract(inTokenAddress, erc20Abi.abi, wallet);

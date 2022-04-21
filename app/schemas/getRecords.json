@@ -1,0 +1,32 @@
+{
+    "$id": "/getRecords",
+    "type": "object",
+    "properties": {
+        "accounts": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^0x[0-9a-fA-F]{40}$"
+            }
+        },
+        "startTimestamp": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$"
+        },
+        "endTimestamp": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$"
+        },
+        "chainId": {
+            "type": "number",
+            "enum": [1, 10, 56, 66, 100, 128, 137, 250, 288, 42161, 43114]
+        }
+    },
+    "required": [
+        "accounts",
+        "chainId",
+        "startTimestamp",
+        "endTimestamp"
+    ],
+    "pattern": "^0x[0-9a-fA-F]{40}$"
+}

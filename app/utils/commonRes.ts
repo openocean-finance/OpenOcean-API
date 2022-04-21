@@ -1,8 +1,5 @@
 import { toFixed, tokenToUsd } from './utils';
-import { getDecimals, decimals2Amount } from './utils';
-export const dexList = new Map();
-
-
+import { decimals2Amount } from './utils';
 export const dealPromise = promise => {
   return promise.then(data => {
     return [ null, data ];
@@ -20,26 +17,27 @@ export const dealPromise = promise => {
  * @param gasPrice
  * @return
  */
-export const pkgRes = async (params: any, outAmount: any, transCost: any): Promise<any> => {
-  console.log(outAmount);
-  const [ error, usd ] = await tokenToUsd(params);
-  if (error) return { code: 500, error };
-
-  const { decimals } = getDecimals(params.outTokenAddress, params.chainId);
-
-  outAmount = decimals2Amount(outAmount, decimals);
-
+export const pkgRes = async (params: any, estOutAmount: any, transCost: any): Promise<any> => {
+  let usd: any = {};
+  const { withUsd } = params;
+  let outAmount: any = decimals2Amount(estOutAmount, params.out_token_decimals);
   transCost = transCost ? decimals2Amount(transCost * params.gasPrice, 18) : undefined;
+  if (params.chainId === 401 || params.chainId === '401') transCost = 0.15;
   let save;
   if (params.save) {
-    save = decimals2Amount(params.save, decimals);
+    save = decimals2Amount(params.save, params.out_token_decimals);
     save = toFixed(save, 4);
   }
-
-  const inUsd = (usd.inUsd && params.inAmount) ? toFixed(usd.inUsd * params.inAmount, 4) : 0;
-  const outUsd = (usd.outUsd && outAmount) ? toFixed(usd.outUsd * outAmount, 4) : 0;
-  const transUsd = (usd.nativeUsd && transCost) ? toFixed(usd.nativeUsd * transCost, 4) : 0;
+  if (withUsd === true || withUsd === 'true') {
+    // ingore err
+    [ , usd ] = await tokenToUsd(params);
+  }
+  const inUsd = (usd.inUsd && params.inAmount) ? toFixed(usd.inUsd * params.inAmount, 4) : undefined;
+  const outUsd = (usd.outUsd && outAmount) ? toFixed(usd.outUsd * outAmount, 4) : undefined;
+  const transUsd = (usd.nativeUsd && transCost) ? toFixed(usd.nativeUsd * transCost, 4) : undefined;
   outAmount = toFixed(outAmount, 4);
+  const dexes = params.withDex ? params.dexes : undefined;
+  const path = params.withRoute ? params.path : undefined;
   const resp: any = {
     inToken: {
       symbol: params.inTokenSymbol,
@@ -54,13 +52,15 @@ export const pkgRes = async (params: any, outAmount: any, transCost: any): Promi
       outUsd,
     },
     inAmount: params.inAmount,
-    outAmount,
-    exChange: params.exChange,
+    outAmount: params.withDecimals ? estOutAmount : outAmount,
     transCost,
     transUsd,
     save,
     nativeUsd: params.nativeTokenUsd,
+    path,
+    dexes,
     // crossType: '',
   };
+  // params.redis.setex(params.key, '30', JSON.stringify(resp));
   return { code: 200, data: resp };
 };

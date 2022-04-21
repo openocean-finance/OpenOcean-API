@@ -2,36 +2,27 @@ import { Application } from 'egg';
 
 export default (app: Application) => {
   const { controller, router } = app;
+  router.get('/test', controller.home.test);
+  router.get('/v3/:chain/quote', controller.openOcean.quote);
+  router.get('/v3/:chain/tokenList', controller.openOcean.getTokenList);
+  router.get('/v3/:chain/dexList', controller.openOcean.getDexList);
+  router.get('/v3/:chain/gasPrice', controller.openOcean.getGasPrice);
+  router.get('/v3/:chain/swap_quote', controller.openOcean.swap_quote);
+  router.get('/v3/:chain/getTransaction', controller.openOcean.getTransaction);
+  router.get('/v3/:chain/chainMsg', controller.openOcean.getChainMsg);
+  router.get('/v3/:chain/getTxs', controller.openOcean.getTxs);
+  router.post('/v3/:chain/swap', controller.openOcean.swap);
+  router.get('/v3/:chain/decodeInputData', controller.openOcean.decodeInputData);
+  router.get('/v3/:chain/getTransactionReceipt', controller.openOcean.getTransactionReceipt);
+  router.get('/v3/:chain/getBlockNumber', controller.openOcean.getBlockNumber);
+  router.get('/v3/:chain/getHashFromChain', controller.openOcean.getHashFromChain);
 
-  router.get('/', controller.middleWare.test);
 
-  // Get information of Swap quote
-  router.get('/v1/cross/quote', controller.middleWare.quote);
+  router.get('/v3/:chain/getBalance', controller.wallet.getBalance);
+  router.get('/v3/:chain/approve', controller.wallet.approve);
+  router.get('/v3/:chain/allowance', controller.wallet.allowance);
+  router.get('/v3/:chain/createWallet', controller.wallet.createWallet);
 
-  // Swap on chain
-  router.get('/v1/cross/swap', controller.middleWare.swap);
-
-  // Get supported Token(ETH) list
-  router.get('/v1/cross/tokenList', controller.middleWare.tokenList);
-
-  // create random wallet
-  router.get('/v1/cross/createWallet', controller.middleWare.createWallet);
-
-  // get balance by address
-  router.get('/v1/cross/getBalance', controller.middleWare.getBalance);
-
-  // get transaction
-  router.get('/v1/cross/getTransaction', controller.middleWare.getTransaction);
-
-  // get transaction receipt
-  router.get('/v1/cross/getTransactionReceipt', controller.middleWare.getTransactionReceipt);
-
-  // get transfer
-  router.get('/v1/cross/transfer', controller.middleWare.transfer);
-
-  router.post('/v1/cross/ecRecover', controller.middleWare.ecRecover);
-
-  // get transaction
   router.use('*', () => {
     return 'invalid path';
   });

@@ -113,9 +113,75 @@
             "type": "event"
         },
         {
-            "inputs": [],
-            "name": "initialize",
-            "outputs": [],
+            "inputs": [
+                {
+                    "internalType": "contract IERC20",
+                    "name": "srcToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minReturn",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "bytes32[]",
+                    "name": "",
+                    "type": "bytes32[]"
+                }
+            ],
+            "name": "callUniswap",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "returnAmount",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "contract IERC20",
+                    "name": "srcToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minReturn",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "bytes32[]",
+                    "name": "pools",
+                    "type": "bytes32[]"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "permit",
+                    "type": "bytes"
+                }
+            ],
+            "name": "callUniswapWithPermit",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "returnAmount",
+                    "type": "uint256"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -130,13 +196,6 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "pause",
-            "outputs": [],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -162,17 +221,153 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20",
-                    "name": "token",
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minReturn",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "pools",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "uniswapV3Swap",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "returnAmount",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "int256",
+                    "name": "amount0Delta",
+                    "type": "int256"
+                },
+                {
+                    "internalType": "int256",
+                    "name": "amount1Delta",
+                    "type": "int256"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "",
+                    "type": "bytes"
+                }
+            ],
+            "name": "uniswapV3SwapCallback",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address payable",
+                    "name": "recipient",
                     "type": "address"
                 },
                 {
                     "internalType": "uint256",
                     "name": "amount",
                     "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minReturn",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "pools",
+                    "type": "uint256[]"
                 }
             ],
-            "name": "rescueFunds",
+            "name": "uniswapV3SwapTo",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "returnAmount",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address payable",
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "internalType": "contract IERC20",
+                    "name": "srcToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minReturn",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "pools",
+                    "type": "uint256[]"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "permit",
+                    "type": "bytes"
+                }
+            ],
+            "name": "uniswapV3SwapToWithPermit",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "returnAmount",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "stateMutability": "payable",
+            "type": "receive"
+        },
+        {
+            "inputs": [],
+            "name": "initialize",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -283,12 +478,24 @@
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "newOwner",
+                    "internalType": "contract IERC20",
+                    "name": "token",
                     "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
                 }
             ],
-            "name": "transferOwnership",
+            "name": "rescueFunds",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "pause",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"

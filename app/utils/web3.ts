@@ -1,7 +1,7 @@
 import { Contract, ethers } from 'ethers';
 import erc20Abi from './abi/erc20Abi.json';
 import BigNumber from 'bignumber.js';
-import { getRpcUrlByChainId } from './chain';
+import { getPublicRpcUrlByChainId } from './chain';
 import Web3 from 'web3';
 
 /**
@@ -13,32 +13,29 @@ export const approve = async (approveContract: string, walletAddress: string, am
   console.log(amount, bal, Number(bal));
   if (Number(bal) > Number(amount)) {
     console.log('have approve');
-    return;
+    return null;
   }
   let result;
   try {
     result = await contract.approve(approveContract, new BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').toFixed(0, 1));
   } catch (error) {
     console.log('approve error: ', error);
+    return error;
   }
   // this.ctx.logger.info('approve result', result);
   console.log('result: ', result);
-  return {
-    code: 0,
-    msg: 'success',
-    data: result,
-  };
+  return null;
 };
 
 export const createWallet = async (chainId: string, privateKey: string) => {
-  const rpcUrl = getRpcUrlByChainId(chainId);
+  const rpcUrl = getPublicRpcUrlByChainId(chainId);
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
   const wallet = new ethers.Wallet(privateKey, provider);
   return wallet;
 };
 
 export const getMyWallet = (chainId: any, privateKey):any => {
-  const rpcUrl: any = getRpcUrlByChainId(chainId);
+  const rpcUrl: any = getPublicRpcUrlByChainId(chainId);
   const provider = new Web3.providers.HttpProvider(rpcUrl, { timeout: 30000 });
   const web3 = new Web3(provider);
   web3.eth.accounts.wallet.add(privateKey);
@@ -49,3 +46,8 @@ export const ecRecover = async (chaindId: string, msg: string, signature: string
   const web3: Web3 = getMyWallet(chaindId, privateKey);
   return await web3.eth.accounts.recover(msg, signature);
 };
+
+export const getWeb3 = (address: string): Web3 => {
+  return new Web3(new Web3.providers.HttpProvider(address, { timeout: 30000 }));
+};
+

@@ -5,7 +5,7 @@ export const getMulticallAddress = (chainId: string): any => {
     137: '0x0196e8a9455a90d392b46df8560c867e7df40b34',
   }[chainId];
 };
-export const getRpcUrlByChainId = (chainId: string): any => {
+export const getPublicRpcUrlByChainId = (chainId: string): any => {
   return {
     1: 'https://api.etherscan.io/',
     10: 'https://mainnet.optimism.io',
@@ -22,6 +22,9 @@ export const getRpcUrlByChainId = (chainId: string): any => {
   }[chainId];
 };
 
+// TODO: rename... this is just an hotfix
+export const getRpcUrlByChainId = getPublicRpcUrlByChainId;
+//
 export const isNativeToken = (token: string) => {
   return [
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',

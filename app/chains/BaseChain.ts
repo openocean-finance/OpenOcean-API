@@ -237,7 +237,7 @@ abstract class BaseChain {
       },
     };
   }
-  public getProvider() {
+  public async getProvider() {
     this.provider = new ethers.providers.JsonRpcProvider(this.rpcUrl);
   }
   public async getTokenInfo(tokenList: Array<TokenModel>, tokenAddress: string) {
@@ -487,20 +487,20 @@ abstract class BaseChain {
   }
   public async init(ctx) {
     this.ctx = ctx;
-    const [ error, tokenList ] = await pkgReq(this.tokeListUrl, {});
-    const [ error1, dexList ] = await pkgReq(this.dexListUrl, {});
-    const [ error2, gasPrice ] = await pkgReq(this.gasPriceUrl, {});
+    const [ _error, tokenList ] = await pkgReq(this.tokeListUrl, {});
+    const [ _error1, dexList ] = await pkgReq(this.dexListUrl, {});
+    const [ _error2, gasPrice ] = await pkgReq(this.gasPriceUrl, {});
     const provider = await this.getProvider();
-    console.log(error, error1, error2);
-    this.ctx.app.messenger.sendToApp('data', { chain: this.chain, tokenList: tokenList.data, gasPrice, dexList, provider });
+    this.syncData([tokenList, gasPrice, dexList, provider]);
   }
-  // update others worker
+
   public async syncData(params) {
     const { tokenList, gasPrice, dexList, provider } = params;
     this.tokenList = tokenList;
     this.dexList = dexList;
     this.gasPrice = gasPrice;
     this.provider = provider;
+    this.ctx.app.messenger.sendToApp('data', { chain: this.chain, tokenList: tokenList.data, gasPrice, dexList, provider });
   }
 }
 

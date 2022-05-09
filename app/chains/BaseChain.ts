@@ -237,7 +237,7 @@ abstract class BaseChain {
       },
     };
   }
-  public async getProvider() {
+  public getProvider() {
     this.provider = new ethers.providers.JsonRpcProvider(this.rpcUrl);
   }
   public async getTokenInfo(tokenList: Array<TokenModel>, tokenAddress: string) {
@@ -491,16 +491,19 @@ abstract class BaseChain {
     const [ _error1, dexList ] = await pkgReq(this.dexListUrl, {});
     const [ _error2, gasPrice ] = await pkgReq(this.gasPriceUrl, {});
     const provider = await this.getProvider();
-    this.syncData([tokenList, gasPrice, dexList, provider]);
+    this.tokenList = tokenList.data;
+    this.dexList = dexList;
+    this.gasPrice = gasPrice;
+    this.provider = provider;
+    this.ctx.app.messenger.sendToApp('data', { chain: this.chain, tokenList: tokenList.data, gasPrice, dexList, provider });
   }
-
+  // update others worker
   public async syncData(params) {
     const { tokenList, gasPrice, dexList, provider } = params;
     this.tokenList = tokenList;
     this.dexList = dexList;
     this.gasPrice = gasPrice;
     this.provider = provider;
-    this.ctx.app.messenger.sendToApp('data', { chain: this.chain, tokenList: tokenList.data, gasPrice, dexList, provider });
   }
 }
 

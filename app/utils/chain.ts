@@ -31,3 +31,50 @@ export const isNativeToken = (token: string) => {
     '',
   ].indexOf(token.toLowerCase()) >= 0;
 };
+export const getIdsByChainId = (chainId: string):any => {
+  return {
+    1: 'ethereum',
+    10: '',
+    56: 'binancecoin',
+    66: 'okexchain',
+    100: 'xdai',
+    128: 'huobi-token',
+    137: 'matic-network',
+    250: 'fantom',
+    288: 'weth',
+    // xdai: 'wrapped-xda',
+    43114: 'wrapped-avax',
+    42164: '',
+    terra: 'uusd',
+    401: 'ong',
+  }[chainId];
+};
+export const getChainById = (chainId: string): any => {
+  return {
+    1: 'eth',
+    56: 'bsc',
+    137: 'polygon',
+    250: 'fantom',
+    43114: 'avax',
+  }[chainId];
+};
+
+export const getChainByChainId = (chainId: string):any => {
+  return {
+    1: 'eth',
+    56: 'bsc',
+    66: 'okex',
+    100: 'xdai',
+    128: 'heco',
+    137: 'polygon',
+    250: 'fantom',
+    288: 'boba',
+    43114: 'avalanche',
+    42161: 'arbitrum',
+    400: 'terra', // custom chainId
+    ont: 'ont',
+    tron: 'tron',
+    solana: 'solana',
+    terra: 'terra',
+  }[chainId];
+};

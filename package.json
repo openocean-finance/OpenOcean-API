@@ -31,7 +31,6 @@
     "egg": "^2.6.1",
     "egg-cors": "^2.2.3",
     "egg-logger": "^2.6.2",
-    "egg-mysql": "^3.0.0",
     "egg-scripts": "^2.6.0",
     "ethers": "^5.4.6",
     "https": "^1.0.0",

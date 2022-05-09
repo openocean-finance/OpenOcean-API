@@ -49,18 +49,6 @@ export default (appInfo: EggAppInfo) => {
     paraswap: '',
   };
 
-  config.mysql = {
-    client: {
-      host: 'localhost',
-      port: '3306',
-      user: 'root',
-      password: '111111',
-      database: 'example',
-    },
-    app: true,
-    agent: false,
-  };
-
   // add your special config in here
   const bizConfig = {
     sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`,

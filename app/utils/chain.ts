@@ -1,13 +1,13 @@
 export const getRpcUrlByChainId = (chainId: string) => {
   return {
-    1: 'https://main-light.eth.linkpool.io/',
-    56: 'https://bsc-dataseed.binance.org/',
-    66: 'https://exchainrpc.okex.org',
-    100: 'https://rpc.xdaichain.com/',
-    128: 'https://http-mainnet-node.huobichain.com',
-    137: 'https://rpc-mainnet.matic.network',
-    250: 'https://rpc.ftm.tools',
-    43114: 'https://api.avax.network/ext/bc/C/rpc',
+    1: '',
+    56: '',
+    66: '',
+    100: '',
+    128: '',
+    137: '',
+    250: '',
+    43114: '',
   }[chainId];
 };
 

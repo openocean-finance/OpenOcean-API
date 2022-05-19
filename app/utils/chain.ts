@@ -1,13 +1,17 @@
 export const getRpcUrlByChainId = (chainId: string) => {
   return {
-    1: '',
-    56: '',
-    66: '',
-    100: '',
-    128: '',
-    137: '',
-    250: '',
-    43114: '',
+    1: 'https://api.etherscan.io/',
+    10: 'https://mainnet.optimism.io',
+    56: 'https://bsc-dataseed1.binance.org/',
+    97: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    66: 'https://exchainrpc.okex.org',
+    100: 'https://rpc.xdaichain.com',
+    128: 'https://http-mainnet-node.huobichain.com',
+    137: 'https://rpc-mainnet.maticvigil.com',
+    250: 'https://rpcapi.fantom.network/',
+    288: 'https://mainnet.boba.network/',
+    42161: 'https://arb1.arbitrum.io/rpc',
+    43114: 'https://api.avax.network/ext/bc/C/rpc',
   }[chainId];
 };
 

@@ -69,9 +69,9 @@ export const getDexList = (chainId: string) => {
  */
 export default class SyncData extends Service {
   public update(params: any) {
-    tokenList = params.tokenList;
-    gasPriceList = params.gasPriceList;
-    dexList = params.dexList;
+    if (params.tokenList) tokenList = params.tokenList;
+    if (params.gasPriceList) gasPriceList = params.gasPriceList;
+    if (params.dexList) dexList = params.dexList;
   }
 }
 

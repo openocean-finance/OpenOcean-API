@@ -78,10 +78,11 @@ def swap(sender, in_token, out_token, swap_amount, gasPrice, slippage):
     to_o = response_json['data']['to']
     value = response_json['data']['value']
     data = response_json['data']['data']
-
+    chainId = response_json['data']['chainId']
 
     # Construct transaction parameters on the chain
     transaction_params = {
+        'chainId': chainId,
         'from': from_o,
         'to': to_o,
         'value': int(value),

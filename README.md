@@ -1,38 +1,16 @@
-## Notice
-We strongly recommend that users deploy it themselves, rather than simply call it!
+## Info
+- This code is a Python code that contains two parts: approve and swap. You can freely choose to execute approve or swap. 
+- Please modify the corresponding parameters according to your needs, see the comments in the code for details.
 
-# openocean-api
+python >= 3.9(recommend 3.10.6)  
 
-openocean-api using typescript && egg
-
-## QuickStart
-
-### Development
-
+## run
 ```bash
-$ npm i
-$ npm run dev
-$ open http://localhost:7003/
+# install requirement
+pip install web3==6.13.0
+or
+pip install -r requirements.txt
+
+#run, the hash will be output
+python transaction_demo.py
 ```
-
-Don't tsc compile at development mode, if you had run `tsc` then you need to `npm run clean` before `npm run dev`.
-
-### Deploy
-
-```bash
-$ npm run tsc
-$ npm start
-```
-
-### Npm Scripts
-
-- Use `npm run lint` to check code style
-- Use `npm test` to run unit test
-- se `npm run clean` to clean compiled js at development mode once
-
-### Requirement
-
-- Node.js 8.x
-- Typescript 2.8+
-
-

@@ -22,6 +22,9 @@ export const getPublicRpcUrlByChainId = (chainId: string): any => {
   }[chainId];
 };
 
+// TODO: rename... this is just an hotfix
+export const getRpcUrlByChainId = getPublicRpcUrlByChainId;
+//
 export const isNativeToken = (token: string) => {
   return [
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
